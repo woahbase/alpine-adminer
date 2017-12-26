@@ -1,0 +1,27 @@
+#!/usr/bin/with-contenv bash
+
+# application specific configurations
+
+CSSURL="https://raw.githubusercontent.com/vrana/adminer/master/designs/nette/adminer.css";
+CSS_SRC="${CSS_SRC:-$CSSURL}";
+
+if [ ! -e ${ADMINER_INSTALL} ]; then
+    mkdir -p /config/www/adminer;
+    mv ${ADMINER_SRC} ${ADMINER_INSTALL};
+    curl -o /config/www/adminer/adminer.css -SL "${CSS_SRC}";
+    chown -R alpine:alpine /config/www/adminer;
+    echo "Setup Adminer";
+fi
+
+if [ ! -e ${EDITOR_INSTALL} ]; then
+    mkdir -p /config/www/editor;
+    mv ${EDITOR_SRC} ${EDITOR_INSTALL};
+    curl -o /config/www/editor/adminer.css -SL "${CSS_SRC}";
+    chown -R alpine:alpine /config/www/editor;
+    echo "Setup Editor";
+fi
+
+# permissions
+chown -R alpine:alpine \
+    /config \
+    /var/tmp/nginx

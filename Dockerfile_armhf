@@ -1,0 +1,47 @@
+ARG ARCH=frommakefile
+ARG DOCKERSRC=frommakefile
+ARG USERNAME=frommakefile
+#
+FROM ${USERNAME}/${DOCKERSRC}:${ARCH}
+#
+ARG PUID=1001
+ARG PGID=1001
+#
+ENV ADMINER_SRC="/opt/adminer/adminer.php" \
+    ADMINER_INSTALL="/config/www/adminer/index.php" \
+    EDITOR_SRC="/opt/adminer/editor.php" \
+    EDITOR_INSTALL="/config/www/editor/index.php"
+#
+RUN set -xe \
+    && apk add --no-cache --purge -uU \
+    acl \
+    bzip2 \
+    gzip \
+    php7-session \
+    php7-bz2 \
+    php7-mysqli \
+    php7-mysqlnd \
+    php7-pgsql \
+    php7-pdo_pgsql \
+    php7-sqlite3 \
+    php7-pdo_sqlite \
+    php7-zip \
+# php7-mysql \
+# php-oci8 \
+# php-pdo_oci \
+# php-sqlsrv \
+# php-mssql \
+    sqlite \
+    unzip \
+    xz \
+    && mkdir -p /opt/adminer \
+    && VERSION=$(curl -sX GET "https://api.github.com/repos/vrana/adminer/releases/latest" \
+        | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__') \
+    && echo "Adminer version: ${VERSION}" > /opt/adminer/version \
+    && curl -o ${ADMINER_SRC} -SL "https://github.com/vrana/adminer/releases/download/v${VERSION}/adminer-${VERSION}.php" \
+    && curl -o ${EDITOR_SRC} -SL "https://github.com/vrana/adminer/releases/download/v${VERSION}/editor-${VERSION}.php" \
+    && rm -rf /var/cache/apk/* /tmp/*
+# add local files
+COPY root/ /
+# ports, volumes etc from nginx
+# ENTRYPOINT ["/init"]
