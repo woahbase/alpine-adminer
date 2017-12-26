@@ -15,6 +15,7 @@ ENV ADMINER_SRC="/opt/adminer/adminer.php" \
 RUN set -xe \
     && apk add --no-cache --purge -uU \
     acl \
+    curl \
     bzip2 \
     gzip \
     php7-session \
